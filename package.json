@@ -1,0 +1,9 @@
+{
+  "name": "skmusic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "install:all": "npm --prefix Sk-Backend install && npm --prefix Sk-Frontend install"
+  }
+}
