@@ -1,7 +1,7 @@
-// Carga la cuenta de demo con su biblioteca.   Uso: npm run seed:demo
+// Carga la cuenta de demo con su biblioteca y sus playlists.   Uso: npm run seed:demo
 //
 // - Si el usuario "demo" ya existe lo borra (con ON DELETE CASCADE se van su biblioteca,
-//   reseñas y actividad) y lo vuelve a crear, así se puede correr las veces que haga falta.
+//   reseñas, playlists y actividad) y lo vuelve a crear, así se puede correr las veces que haga falta.
 // - La contraseña sale de la variable DEMO_PASSWORD del .env y se guarda hasheada con bcrypt
 //   (usa el mismo register del login).
 // - Las canciones se cargan con las mismas funciones que usan los endpoints: se traen de
@@ -10,6 +10,7 @@ import pool, { query } from '../src/config/db.js';
 import * as authService from '../src/services/auth.service.js';
 import * as libraryService from '../src/services/library.service.js';
 import * as reviewService from '../src/services/review.service.js';
+import * as playlistService from '../src/services/playlist.service.js';
 
 const DEMO_USER = { username: 'demo', email: 'demo@example.com', nombre: 'Cuenta Demo' };
 
@@ -44,6 +45,29 @@ const SONGS = [
   },
 ];
 
+// 3 playlists con canciones de la biblioteca de arriba (así no hay que buscar ids nuevos en Deezer).
+// La tercera se crea como "Gym", se renombra y se le quita una canción, para que quede
+// actividad de todos los tipos de playlist.
+const PLAYLISTS = [
+  {
+    nombre: 'Rock nacional',
+    descripcion: 'Lo mejor del rock argentino',
+    canciones: [13342192, 537033822, 13255149, 3538068], // Soda Stereo, Charly García, Cerati, Enanitos Verdes
+  },
+  {
+    nombre: 'Clásicos en inglés',
+    descripcion: 'Temas que no pasan de moda',
+    canciones: [4091937401, 426703682, 4603408, 13791930], // Queen, Eagles, Michael Jackson, Nirvana
+  },
+  {
+    nombre: 'Gym',
+    renombrarA: 'Para entrenar',
+    descripcion: 'Para ir a buen ritmo',
+    canciones: [908604612, 1124841682, 3135556, 655095912, 4603408], // The Weeknd, Dua Lipa, Daft Punk, Billie Eilish, MJ
+    quitar: 4603408, // Billie Jean se agrega y después se quita
+  },
+];
+
 const main = async () => {
   const password = process.env.DEMO_PASSWORD;
   if (!password || password.length < 8) {
@@ -65,8 +89,22 @@ const main = async () => {
     console.log(`  + ${cancion.titulo} - ${cancion.artista_nombre} (${song.estado})`);
   }
 
+  for (const datos of PLAYLISTS) {
+    const { nombre, descripcion } = datos;
+    const playlist = await playlistService.create(id, { nombre, descripcion, portada_url: null });
+    for (const deezerId of datos.canciones) {
+      await playlistService.addSong(id, playlist.id_playlist, deezerId);
+    }
+    if (datos.renombrarA) await playlistService.update(id, playlist.id_playlist, { nombre: datos.renombrarA });
+    if (datos.quitar) await playlistService.removeSong(id, playlist.id_playlist, datos.quitar);
+
+    const final = await playlistService.getDetail(id, playlist.id_playlist);
+    console.log(`  + Playlist "${final.nombre}" (${final.cantidad_canciones} canciones)`);
+  }
+
   const { rows } = await query(
     `SELECT (SELECT COUNT(*) FROM biblioteca WHERE id_usuario = $1) AS canciones,
+            (SELECT COUNT(*) FROM playlist WHERE id_usuario = $1) AS playlists,
             (SELECT COUNT(DISTINCT estado) FROM biblioteca WHERE id_usuario = $1) AS estados,
             (SELECT COUNT(*) FROM biblioteca WHERE id_usuario = $1 AND puntuacion IS NOT NULL) AS puntuaciones,
             (SELECT COUNT(*) FROM resena WHERE id_usuario = $1) AS resenas,

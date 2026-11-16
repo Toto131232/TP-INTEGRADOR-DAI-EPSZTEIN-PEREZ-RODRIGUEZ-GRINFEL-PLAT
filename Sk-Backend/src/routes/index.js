@@ -5,6 +5,7 @@ import { requireAuth } from '../middlewares/auth.middleware.js';
 import * as libraryController from '../controllers/library.controller.js';
 import * as reviewController from '../controllers/review.controller.js';
 import * as activityController from '../controllers/activity.controller.js';
+import * as playlistController from '../controllers/playlist.controller.js';
 
 const router = Router();
 
@@ -24,6 +25,15 @@ router.get('/songs/:deezerId/reviews', reviewController.listBySong);
 router.post('/songs/:deezerId/reviews', requireAuth, reviewController.create);
 router.put('/reviews/:idResena', requireAuth, reviewController.update);
 router.delete('/reviews/:idResena', requireAuth, reviewController.remove);
+
+// Playlists del usuario logueado (todas piden token)
+router.get('/playlists', requireAuth, playlistController.list);
+router.post('/playlists', requireAuth, playlistController.create);
+router.get('/playlists/:idPlaylist', requireAuth, playlistController.getOne);
+router.patch('/playlists/:idPlaylist', requireAuth, playlistController.update);
+router.delete('/playlists/:idPlaylist', requireAuth, playlistController.remove);
+router.post('/playlists/:idPlaylist/songs', requireAuth, playlistController.addSong);
+router.delete('/playlists/:idPlaylist/songs/:deezerId', requireAuth, playlistController.removeSong);
 
 // Actividad reciente del usuario logueado
 router.get('/activity', requireAuth, activityController.list);
