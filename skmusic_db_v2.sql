@@ -108,8 +108,8 @@ CREATE TABLE actividad (
 
 -- -----------------------------------------------------
 --  HISTORIAL DE REPRODUCCION (para el resumen tipo Wrapped)
---  Se llena cuando el usuario escucha un preview en la app
---  o importando un historial de Spotify / Last.fm
+--  Se llena importando un historial de Spotify / Last.fm
+--  (la app no reproduce música)
 -- -----------------------------------------------------
 CREATE TABLE historial_reproduccion (
     id_reproduccion      BIGSERIAL PRIMARY KEY,
