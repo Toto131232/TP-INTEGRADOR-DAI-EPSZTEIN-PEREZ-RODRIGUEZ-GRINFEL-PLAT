@@ -2,21 +2,22 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  Platform,
-  StatusBar,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SongItem from '../components/SongItem';
 import { searchSongs } from '../api/songs';
+import { colors } from '../theme';
 
 const DEBOUNCE_MS = 400;
 const PAGE_SIZE = 20;
 
 export default function SearchScreen() {
+  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [songs, setSongs] = useState([]);
   const [total, setTotal] = useState(0);
@@ -104,7 +105,7 @@ export default function SearchScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
       <Text style={styles.header}>Buscar</Text>
 
       <View style={styles.searchBox}>
@@ -127,7 +128,7 @@ export default function SearchScreen() {
         )}
       </View>
 
-      {loading && <ActivityIndicator style={styles.loader} color="#1DB954" />}
+      {loading && <ActivityIndicator style={styles.loader} color={colors.accent} />}
 
       {!loading && songs.length > 0 && (
         <Text style={styles.count}>{total} resultados</Text>
@@ -144,7 +145,7 @@ export default function SearchScreen() {
         keyboardDismissMode="on-drag"
         contentContainerStyle={styles.listContent}
         ListFooterComponent={
-          loadingMore ? <ActivityIndicator style={styles.loader} color="#1DB954" /> : null
+          loadingMore ? <ActivityIndicator style={styles.loader} color={colors.accent} /> : null
         }
       />
     </View>
@@ -154,13 +155,12 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) + 12 : 60,
+    backgroundColor: colors.bg,
   },
   header: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: '800',
     paddingHorizontal: 16,
     marginBottom: 12,
   },
@@ -178,8 +178,8 @@ const styles = StyleSheet.create({
   count: { color: '#888', fontSize: 12, paddingHorizontal: 16, marginTop: 12 },
   listContent: { paddingVertical: 8, flexGrow: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
-  hint: { color: '#aaa', fontSize: 15, textAlign: 'center' },
-  errorText: { color: '#ff6b6b', fontSize: 15, textAlign: 'center' },
+  hint: { color: colors.textMuted, fontSize: 15, textAlign: 'center' },
+  errorText: { color: colors.danger, fontSize: 15, textAlign: 'center' },
   retry: {
     marginTop: 12,
     paddingHorizontal: 20,

@@ -41,10 +41,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   cover: { width: 52, height: 52, borderRadius: 6 },
-  coverPlaceholder: { backgroundColor: '#2a2a2a' },
+  coverPlaceholder: { backgroundColor: '#2A3457' },
   info: { flex: 1, marginHorizontal: 12 },
   title: { color: '#fff', fontSize: 15, fontWeight: '600' },
   explicit: { color: '#999', fontSize: 11, fontWeight: '700' },
-  subtitle: { color: '#aaa', fontSize: 13, marginTop: 2 },
+  subtitle: { color: '#9AA3BA', fontSize: 13, marginTop: 2 },
   duration: { color: '#888', fontSize: 12 },
 });
