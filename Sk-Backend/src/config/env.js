@@ -14,16 +14,5 @@ export const env = {
     baseURL: process.env.DEEZER_API_URL || 'https://api.deezer.com',
     timeout: Number(process.env.DEEZER_TIMEOUT_MS) || 8000,
   },
-  // Lo recibe pg.Pool en config/db.js
-  db: {
-    host: process.env.DB_HOST || 'localhost',
-    port: Number(process.env.DB_PORT) || 5432,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-  },
-  jwt: {
-    secret: process.env.JWT_SECRET,
-    expiresIn: process.env.JWT_EXPIRES_IN || '1d',
   },
 };
