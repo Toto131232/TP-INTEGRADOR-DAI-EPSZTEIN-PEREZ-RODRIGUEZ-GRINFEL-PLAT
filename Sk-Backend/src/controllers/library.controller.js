@@ -73,6 +73,18 @@ export const changeStatus = async (req, res) => {
   res.json({ cancion });
 };
 
+// PUT /api/library/:deezerId/like   body: { me_gusta: true|false }
+export const like = async (req, res) => {
+  const deezerId = parseId(req.params.deezerId, 'deezer_id');
+  const { me_gusta: meGusta } = req.body ?? {};
+  if (typeof meGusta !== 'boolean') {
+    throw new HttpError(400, 'me_gusta debe ser true o false');
+  }
+
+  const cancion = await libraryService.setLike(req.user.id, deezerId, meGusta);
+  res.json({ cancion });
+};
+
 // PUT /api/library/:deezerId/rating   body: { puntuacion }
 export const rate = async (req, res) => {
   const deezerId = parseId(req.params.deezerId, 'deezer_id');

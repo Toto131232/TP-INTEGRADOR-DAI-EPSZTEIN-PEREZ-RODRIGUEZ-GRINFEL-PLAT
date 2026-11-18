@@ -1,5 +1,6 @@
 import { HttpError } from '../middlewares/error.middleware.js';
 import * as songService from '../services/song.service.js';
+import { parseId } from '../utils/validation.js';
 
 const MAX_QUERY_LENGTH = 100;
 const DEFAULT_LIMIT = 20;
@@ -31,4 +32,11 @@ export const search = async (req, res) => {
 
   const result = await songService.searchSongs({ q, limit, index });
   res.json(result);
+};
+
+// GET /api/songs/:deezerId   (pública) -> { cancion }
+export const detail = async (req, res) => {
+  const deezerId = parseId(req.params.deezerId, 'deezer_id');
+  const cancion = await songService.getSongDetail(deezerId);
+  res.json({ cancion });
 };

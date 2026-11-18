@@ -16,7 +16,7 @@ import { colors } from '../theme';
 const DEBOUNCE_MS = 400;
 const PAGE_SIZE = 20;
 
-export default function SearchScreen() {
+export default function SearchScreen({ onOpenSong }) {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [songs, setSongs] = useState([]);
@@ -137,7 +137,7 @@ export default function SearchScreen() {
       <FlatList
         data={loading ? [] : songs}
         keyExtractor={(item) => String(item.deezerId)}
-        renderItem={({ item }) => <SongItem song={item} />}
+        renderItem={({ item }) => <SongItem song={item} onPress={onOpenSong} />}
         ListEmptyComponent={renderEmpty}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
