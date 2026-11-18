@@ -9,22 +9,55 @@ const DEFAULT_URL = Platform.OS === 'android'
 
 export const API_URL = process.env.EXPO_PUBLIC_API_URL || DEFAULT_URL;
 
-export const apiGet = async (path, params = {}, { signal } = {}) => {
+// Token JWT de la sesión actual. Lo setea el AuthContext al loguearse / restaurar la sesión.
+let authToken = null;
+let onUnauthorized = null;
+
+export const setAuthToken = (token) => {
+  authToken = token;
+};
+
+// Se llama cuando el backend responde 401 con un token (vencido o usuario borrado)
+export const setOnUnauthorized = (fn) => {
+  onUnauthorized = fn;
+};
+
+const request = async (method, path, { params = {}, body, signal } = {}) => {
   const query = Object.entries(params)
     .filter(([, v]) => v !== undefined && v !== null)
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
     .join('&');
   const url = `${API_URL}${path}${query ? `?${query}` : ''}`;
 
+  const headers = {};
+  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  if (authToken) headers.Authorization = `Bearer ${authToken}`;
+
   let res;
   try {
-    res = await fetch(url, { signal });
+    res = await fetch(url, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      signal,
+    });
   } catch (err) {
     if (err.name === 'AbortError') throw err;
     throw new Error('No se pudo conectar con el servidor');
   }
 
-  const body = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(body?.error || `Error ${res.status}`);
-  return body;
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    if (res.status === 401 && authToken) onUnauthorized?.();
+    const error = new Error(data?.error || `Error ${res.status}`);
+    error.status = res.status;
+    throw error;
+  }
+  return data;
 };
+
+export const apiGet = (path, params = {}, { signal } = {}) =>
+  request('GET', path, { params, signal });
+
+export const apiPost = (path, body, { signal } = {}) =>
+  request('POST', path, { body, signal });

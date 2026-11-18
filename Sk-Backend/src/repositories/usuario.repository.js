@@ -3,12 +3,20 @@ import { query } from '../config/db.js';
 // Campos que se pueden devolver al cliente (nunca password_hash)
 const PUBLIC_FIELDS = 'id_usuario, username, email, nombre, avatar_url, bio, creado_en';
 
-export const findByUsername = async (username) => {
+// Para el login: acepta el username o el email (los emails se guardan en minúscula)
+export const findByUsernameOrEmailForLogin = async (identificador) => {
   const { rows } = await query(
-    `SELECT ${PUBLIC_FIELDS}, password_hash FROM usuario WHERE username = $1`,
-    [username],
+    `SELECT ${PUBLIC_FIELDS}, password_hash FROM usuario
+     WHERE username = $1 OR email = LOWER($1)
+     LIMIT 1`,
+    [identificador],
   );
   return rows[0] || null;
+};
+
+export const existsUsername = async (username) => {
+  const { rowCount } = await query('SELECT 1 FROM usuario WHERE username = $1', [username]);
+  return rowCount > 0;
 };
 
 export const findById = async (id) => {

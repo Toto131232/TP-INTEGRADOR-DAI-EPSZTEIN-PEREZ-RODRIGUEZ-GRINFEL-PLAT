@@ -11,8 +11,9 @@ const signToken = (usuario) =>
     expiresIn: env.jwt.expiresIn,
   });
 
-export const login = async (username, password) => {
-  const usuario = await usuarioRepository.findByUsername(username);
+// "identificador" puede ser el username o el email
+export const login = async (identificador, password) => {
+  const usuario = await usuarioRepository.findByUsernameOrEmailForLogin(identificador);
 
   // Mismo mensaje si el usuario no existe o la contraseña es incorrecta
   const ok = usuario && (await bcrypt.compare(password, usuario.password_hash));
@@ -44,6 +45,9 @@ export const register = async ({ username, email, password, nombre }) => {
 
   return { token: signToken(usuario), usuario };
 };
+
+export const isUsernameDisponible = async (username) =>
+  !(await usuarioRepository.existsUsername(username));
 
 export const verifyToken = (token) => {
   try {

@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "node scripts/dev.js",
     "dev": "node scripts/dev.js",
     "install:all": "npm --prefix Sk-Backend install && npm --prefix Sk-Frontend install"
   }

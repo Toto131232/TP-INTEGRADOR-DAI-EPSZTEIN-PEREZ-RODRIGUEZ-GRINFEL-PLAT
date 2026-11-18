@@ -13,7 +13,6 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Cover from '../components/Cover';
 import { getDestacados, getResumen } from '../api/home';
-import { DEMO_USUARIO_ID } from '../config';
 import { colors, radius } from '../theme';
 
 const saludo = (date = new Date()) => {
@@ -45,7 +44,7 @@ export default function HomeScreen({ onNavigate }) {
   // Las dos partes se cargan por separado: si falla una, la otra se muestra igual.
   const cargar = useCallback(async (signal) => {
     const [r, d] = await Promise.allSettled([
-      getResumen(DEMO_USUARIO_ID, { signal }),
+      getResumen({ signal }),
       getDestacados({ signal }),
     ]);
     if (signal?.aborted) return;
