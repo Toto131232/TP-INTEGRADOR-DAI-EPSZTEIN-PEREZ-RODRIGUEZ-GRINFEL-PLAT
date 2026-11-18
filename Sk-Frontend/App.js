@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import TabBar from './src/components/TabBar';
 import HomeScreen from './src/screens/HomeScreen';
 import SearchScreen from './src/screens/SearchScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 import PlaceholderScreen from './src/screens/PlaceholderScreen';
 import { colors } from './src/theme';
 
@@ -23,7 +24,7 @@ export default function App() {
       case 'stats':
         return <PlaceholderScreen title="Stats" />;
       case 'perfil':
-        return <PlaceholderScreen title="Perfil" />;
+        return <ProfileScreen onNavigate={setTab} />;
       default:
         return null;
     }
