@@ -14,6 +14,11 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   const status = err.status || 500;
-  if (status === 500) console.error(err);
-  res.status(status).json({ error: err.message || 'Internal server error' });
+  // Los 500 son errores inesperados (BD, bugs): el detalle va al log y al cliente
+  // le llega un mensaje genérico, para no exponer tablas ni datos de la conexión.
+  if (status === 500) {
+    console.error(err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+  res.status(status).json({ error: err.message });
 };
