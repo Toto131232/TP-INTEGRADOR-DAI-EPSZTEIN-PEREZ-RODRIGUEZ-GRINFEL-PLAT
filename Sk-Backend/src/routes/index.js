@@ -1,9 +1,24 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes.js';
 import songRoutes from './song.routes.js';
+import homeRoutes from './home.routes.js';
+import { requireAuth } from '../middlewares/auth.middleware.js';
+import * as libraryController from '../controllers/library.controller.js';
+import * as reviewController from '../controllers/review.controller.js';
+import * as activityController from '../controllers/activity.controller.js';
+import { query } from '../config/db.js';
+
 const router = Router();
 
-router.get('/health', (req, res) => res.json({ status: 'ok' }));
+// Responde 503 si la BD no contesta, así el health refleja el estado real del backend
+router.get('/health', async (req, res) => {
+  try {
+    await query('SELECT 1');
+    res.json({ status: 'ok', db: 'ok' });
+  } catch {
+    res.status(503).json({ status: 'error', db: 'sin conexión' });
+  }
+});
 router.use('/auth', authRoutes);
 
 // Biblioteca del usuario logueado (todas piden token)
