@@ -1,6 +1,18 @@
+import https from 'node:https';
+import tls from 'node:tls';
 import axios from 'axios';
 import { env } from './env.js';
-import { HttpError } from '../middlewares/error.middleware.js';
+import { HttpError } from '../utils/http-error.js';
+
+// En algunas redes (proxy de la escuela o empresa, antivirus) la conexión HTTPS pasa por
+// un certificado que el sistema operativo conoce pero Node no, y Deezer falla con
+// "self-signed certificate in certificate chain". Por eso, además de los certificados
+// que trae Node, confiamos en los del sistema. (getCACertificates existe desde Node 22.15;
+// en versiones anteriores se usan solo los de Node, como siempre.)
+const httpsAgent =
+  typeof tls.getCACertificates === 'function'
+    ? new https.Agent({ ca: [...tls.getCACertificates('default'), ...tls.getCACertificates('system')] })
+    : undefined;
 
 // Cliente HTTP único para la API pública de Deezer.
 // Uso: import deezerApi from '../config/deezer.js';
@@ -8,6 +20,7 @@ import { HttpError } from '../middlewares/error.middleware.js';
 const deezerApi = axios.create({
   baseURL: env.deezer.baseURL,
   timeout: env.deezer.timeout,
+  httpsAgent,
 });
 
 // Deezer responde 200 aun cuando hay error, con { error: { type, message, code } }.
