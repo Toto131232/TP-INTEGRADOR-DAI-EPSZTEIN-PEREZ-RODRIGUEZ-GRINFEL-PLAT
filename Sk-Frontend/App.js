@@ -1,15 +1,55 @@
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import TabBar from './src/components/TabBar';
 import HomeScreen from './src/screens/HomeScreen';
 import SearchScreen from './src/screens/SearchScreen';
 import PlaceholderScreen from './src/screens/PlaceholderScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
+import { AuthProvider, useAuth } from './src/auth/AuthContext';
 import { colors } from './src/theme';
 
 export default function App() {
-  // La Home es la primera pantalla que se ve al abrir la app.
+  return (
+    <SafeAreaProvider>
+      <AuthProvider>
+        <View style={styles.root}>
+          <Root />
+        </View>
+      </AuthProvider>
+      <StatusBar style="light" />
+    </SafeAreaProvider>
+  );
+}
+
+// Sin sesión se muestran login / registro; con sesión, la app con el tab bar.
+function Root() {
+  const { status } = useAuth();
+
+  if (status === 'loading') {
+    return (
+      <View style={[styles.root, styles.center]}>
+        <ActivityIndicator color={colors.accent} size="large" />
+      </View>
+    );
+  }
+  return status === 'authenticated' ? <MainApp /> : <AuthScreens />;
+}
+
+function AuthScreens() {
+  const [screen, setScreen] = useState('login');
+  return screen === 'login' ? (
+    <LoginScreen onGoToRegister={() => setScreen('register')} />
+  ) : (
+    <RegisterScreen onBack={() => setScreen('login')} />
+  );
+}
+
+function MainApp() {
+  const { signOut } = useAuth();
+  // La Home es la primera pantalla que se ve al entrar.
   const [tab, setTab] = useState('inicio');
 
   const renderScreen = () => {
@@ -23,24 +63,22 @@ export default function App() {
       case 'stats':
         return <PlaceholderScreen title="Stats" />;
       case 'perfil':
-        return <PlaceholderScreen title="Perfil" />;
+        return <PlaceholderScreen title="Perfil" onLogout={signOut} />;
       default:
         return null;
     }
   };
 
   return (
-    <SafeAreaProvider>
-      <View style={styles.root}>
-        <View style={styles.screen}>{renderScreen()}</View>
-        <TabBar active={tab} onChange={setTab} />
-      </View>
-      <StatusBar style="light" />
-    </SafeAreaProvider>
+    <>
+      <View style={styles.screen}>{renderScreen()}</View>
+      <TabBar active={tab} onChange={setTab} />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
+  center: { alignItems: 'center', justifyContent: 'center' },
   screen: { flex: 1 },
 });
