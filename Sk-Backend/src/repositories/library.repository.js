@@ -5,7 +5,7 @@ import { query } from '../config/db.js';
 
 // Datos de la biblioteca + datos de la canción (de la caché)
 const SELECT_ITEM = `
-  SELECT b.deezer_id, b.estado, b.puntuacion, b.agregada_en, b.actualizada_en,
+  SELECT b.deezer_id, b.estado, b.puntuacion, b.me_gusta, b.agregada_en, b.actualizada_en,
          c.titulo, c.artista_nombre, c.album_titulo, c.portada_url,
          c.duracion_seg, c.genero, c.fecha_lanzamiento
   FROM biblioteca b
@@ -46,7 +46,7 @@ export const findOne = async (idUsuario, deezerId) => {
 // no se pisan (por ejemplo, al armar el detalle "escuchando -> escuchado").
 export const findForUpdate = async (db, idUsuario, deezerId) => {
   const { rows } = await db.query(
-    `SELECT estado, puntuacion FROM biblioteca
+    `SELECT estado, puntuacion, me_gusta FROM biblioteca
      WHERE id_usuario = $1 AND deezer_id = $2
      FOR UPDATE`,
     [idUsuario, deezerId],
@@ -76,6 +76,14 @@ export const updateStatus = async (db, idUsuario, deezerId, estado) => {
     `UPDATE biblioteca SET estado = $3, actualizada_en = NOW()
      WHERE id_usuario = $1 AND deezer_id = $2`,
     [idUsuario, deezerId, estado],
+  );
+};
+
+export const updateLike = async (db, idUsuario, deezerId, meGusta) => {
+  await db.query(
+    `UPDATE biblioteca SET me_gusta = $3, actualizada_en = NOW()
+     WHERE id_usuario = $1 AND deezer_id = $2`,
+    [idUsuario, deezerId, meGusta],
   );
 };
 

@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 const formatDuration = (seg) => {
   if (!seg) return '';
@@ -8,9 +8,14 @@ const formatDuration = (seg) => {
   return `${m}:${s}`;
 };
 
-function SongItem({ song }) {
+function SongItem({ song, onPress }) {
   return (
-    <View style={styles.row}>
+    <Pressable
+      onPress={onPress ? () => onPress(song) : undefined}
+      disabled={!onPress}
+      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      accessibilityRole={onPress ? 'button' : undefined}
+    >
       {song.album.portadaUrl ? (
         <Image source={{ uri: song.album.portadaUrl }} style={styles.cover} />
       ) : (
@@ -27,7 +32,7 @@ function SongItem({ song }) {
         </Text>
       </View>
       <Text style={styles.duration}>{formatDuration(song.duracionSeg)}</Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -40,6 +45,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
+  pressed: { backgroundColor: 'rgba(255, 255, 255, 0.05)' },
   cover: { width: 52, height: 52, borderRadius: 6 },
   coverPlaceholder: { backgroundColor: '#2A3457' },
   info: { flex: 1, marginHorizontal: 12 },
