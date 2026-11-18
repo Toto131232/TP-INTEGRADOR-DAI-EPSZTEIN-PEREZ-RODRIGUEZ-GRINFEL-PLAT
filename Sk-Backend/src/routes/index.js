@@ -1,11 +1,6 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes.js';
 import songRoutes from './song.routes.js';
-import { requireAuth } from '../middlewares/auth.middleware.js';
-import * as libraryController from '../controllers/library.controller.js';
-import * as reviewController from '../controllers/review.controller.js';
-import * as activityController from '../controllers/activity.controller.js';
-
 const router = Router();
 
 router.get('/health', (req, res) => res.json({ status: 'ok' }));
@@ -29,5 +24,6 @@ router.delete('/reviews/:idResena', requireAuth, reviewController.remove);
 router.get('/activity', requireAuth, activityController.list);
 
 router.use('/songs', songRoutes);
+router.use('/home', homeRoutes);
 
 export default router;
