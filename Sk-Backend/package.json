@@ -5,13 +5,16 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "seed:demo": "node scripts/seed-demo.js",
+    "test:biblioteca": "node scripts/probar-biblioteca.js"
   },
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
     "axios": "^1.21.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
