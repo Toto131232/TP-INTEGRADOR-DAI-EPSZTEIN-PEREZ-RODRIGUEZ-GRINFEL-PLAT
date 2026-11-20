@@ -2,6 +2,8 @@ import { Router } from 'express';
 import authRoutes from './auth.routes.js';
 import songRoutes from './song.routes.js';
 import homeRoutes from './home.routes.js';
+import profileRoutes from './profile.routes.js';
+import statsRoutes from './stats.routes.js';
 import { requireAuth } from '../middlewares/auth.middleware.js';
 import * as libraryController from '../controllers/library.controller.js';
 import * as reviewController from '../controllers/review.controller.js';
@@ -40,5 +42,7 @@ router.get('/activity', requireAuth, activityController.list);
 
 router.use('/songs', songRoutes);
 router.use('/home', homeRoutes);
+router.use('/profile', profileRoutes);
+router.use('/stats', statsRoutes);
 
 export default router;
