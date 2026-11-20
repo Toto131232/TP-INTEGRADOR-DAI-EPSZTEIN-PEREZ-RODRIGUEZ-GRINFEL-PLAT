@@ -17,6 +17,7 @@ export const colors = {
   inputBg: '#132042',
   inputBorder: '#22305A',
   placeholder: '#6B7594',
+  overlay: 'rgba(5, 8, 20, 0.7)', // fondo oscuro detrás de los menús
 };
 
 export const radius = { sm: 6, md: 10, lg: 16, full: 999 };

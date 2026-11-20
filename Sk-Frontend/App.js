@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import TabBar from './src/components/TabBar';
 import HomeScreen from './src/screens/HomeScreen';
 import SearchScreen from './src/screens/SearchScreen';
+import LibraryScreen from './src/screens/LibraryScreen';
 import PlaceholderScreen from './src/screens/PlaceholderScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
@@ -59,7 +60,7 @@ function MainApp() {
       case 'buscar':
         return <SearchScreen />;
       case 'biblioteca':
-        return <PlaceholderScreen title="Biblioteca" />;
+        return <LibraryScreen onNavigate={setTab} />;
       case 'stats':
         return <PlaceholderScreen title="Stats" />;
       case 'perfil':
