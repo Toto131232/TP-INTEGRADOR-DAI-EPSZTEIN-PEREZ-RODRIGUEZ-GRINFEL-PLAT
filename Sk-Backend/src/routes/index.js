@@ -8,6 +8,7 @@ import { requireAuth } from '../middlewares/auth.middleware.js';
 import * as libraryController from '../controllers/library.controller.js';
 import * as reviewController from '../controllers/review.controller.js';
 import * as activityController from '../controllers/activity.controller.js';
+import * as profileController from '../controllers/profile.controller.js';
 import { query } from '../config/db.js';
 
 const router = Router();
@@ -39,6 +40,10 @@ router.delete('/reviews/:idResena', requireAuth, reviewController.remove);
 
 // Actividad reciente del usuario logueado
 router.get('/activity', requireAuth, activityController.list);
+
+// Perfil del usuario logueado
+router.get('/profile', requireAuth, profileController.getPerfil);
+router.put('/profile', requireAuth, profileController.updatePerfil);
 
 router.use('/songs', songRoutes);
 router.use('/home', homeRoutes);
