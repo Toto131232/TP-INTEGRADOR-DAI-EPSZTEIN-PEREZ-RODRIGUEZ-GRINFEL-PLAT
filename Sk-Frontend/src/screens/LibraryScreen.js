@@ -16,6 +16,7 @@ import BottomSheet from '../components/BottomSheet';
 import LibraryRow from '../components/LibraryRow';
 import PrimaryButton from '../components/PrimaryButton';
 import SongActionsSheet from '../components/SongActionsSheet';
+import PlaylistsTab from './PlaylistsTab';
 import * as libraryApi from '../api/library';
 import { useAuth } from '../auth/AuthContext';
 import { ESTADOS } from '../estados';
@@ -65,10 +66,19 @@ const aFormatoBuscador = (c) => ({
 //   si no, abre el menú de acciones.
 // - refreshKey: opcional. Cada vez que cambia se vuelve a pedir la lista
 //   (sirve para refrescar al cerrar el detalle de una canción).
-export default function LibraryScreen({ onNavigate, onOpenSong, refreshKey }) {
+// - seccion / onChangeSeccion: la sección elegida (canciones, playlists, resenas). La guarda
+//   App.js para que al volver del detalle de una playlist se siga viendo la pestaña Playlists.
+// - onOpenPlaylist(idPlaylist): abre el detalle de una playlist.
+export default function LibraryScreen({
+  onNavigate,
+  onOpenSong,
+  refreshKey,
+  seccion,
+  onChangeSeccion,
+  onOpenPlaylist,
+}) {
   const insets = useSafeAreaInsets();
   const { usuario } = useAuth();
-  const [seccion, setSeccion] = useState('canciones');
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
@@ -98,7 +108,7 @@ export default function LibraryScreen({ onNavigate, onOpenSong, refreshKey }) {
             label={s.label}
             activo={s.key === seccion}
             variante="seccion"
-            onPress={() => setSeccion(s.key)}
+            onPress={() => onChangeSeccion(s.key)}
           />
         ))}
       </View>
@@ -106,9 +116,7 @@ export default function LibraryScreen({ onNavigate, onOpenSong, refreshKey }) {
       {seccion === 'canciones' ? (
         <Canciones onNavigate={onNavigate} onOpenSong={onOpenSong} refreshKey={refreshKey} />
       ) : null}
-      {seccion === 'playlists' ? (
-        <Proximamente icono="albums-outline" texto="Las playlists todavía no están disponibles." />
-      ) : null}
+      {seccion === 'playlists' ? <PlaylistsTab onOpenPlaylist={onOpenPlaylist} /> : null}
       {seccion === 'resenas' ? (
         <Proximamente
           icono="chatbubble-ellipses-outline"

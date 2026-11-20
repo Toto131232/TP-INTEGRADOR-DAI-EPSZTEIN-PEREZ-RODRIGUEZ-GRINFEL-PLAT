@@ -2,13 +2,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AddToPlaylistSheet from '../components/AddToPlaylistSheet';
 import SongItem from '../components/SongItem';
 import { searchSongs } from '../api/songs';
 import { colors } from '../theme';
@@ -25,6 +28,8 @@ export default function SearchScreen() {
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  // Canción elegida con el "+" para agregar a una playlist (null = panel cerrado)
+  const [paraAgregar, setParaAgregar] = useState(null);
 
   // Permite cancelar la búsqueda anterior si el usuario sigue escribiendo.
   const controllerRef = useRef(null);
@@ -137,7 +142,22 @@ export default function SearchScreen() {
       <FlatList
         data={loading ? [] : songs}
         keyExtractor={(item) => String(item.deezerId)}
-        renderItem={({ item }) => <SongItem song={item} />}
+        renderItem={({ item }) => (
+          <View style={styles.resultado}>
+            <View style={styles.resultadoInfo}>
+              <SongItem song={item} />
+            </View>
+            <Pressable
+              onPress={() => setParaAgregar(item)}
+              hitSlop={8}
+              style={styles.agregar}
+              accessibilityRole="button"
+              accessibilityLabel={`Agregar ${item.titulo} a una playlist`}
+            >
+              <Ionicons name="add-circle-outline" size={24} color={colors.textMuted} />
+            </Pressable>
+          </View>
+        )}
         ListEmptyComponent={renderEmpty}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
@@ -148,6 +168,8 @@ export default function SearchScreen() {
           loadingMore ? <ActivityIndicator style={styles.loader} color={colors.accent} /> : null
         }
       />
+
+      <AddToPlaylistSheet cancion={paraAgregar} onClose={() => setParaAgregar(null)} />
     </View>
   );
 }
@@ -189,4 +211,7 @@ const styles = StyleSheet.create({
     borderColor: '#fff',
   },
   retryText: { color: '#fff', fontWeight: '600' },
+  resultado: { flexDirection: 'row', alignItems: 'center' },
+  resultadoInfo: { flex: 1 },
+  agregar: { paddingLeft: 4, paddingRight: 16, paddingVertical: 8 },
 });
