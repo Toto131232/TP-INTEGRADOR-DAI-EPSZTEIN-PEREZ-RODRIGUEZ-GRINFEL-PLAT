@@ -9,6 +9,8 @@ import PlaceholderScreen from './src/screens/PlaceholderScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import SongDetailScreen from './src/screens/SongDetailScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+import StatsScreen from './src/screens/StatsScreen';
 import { AuthProvider, useAuth } from './src/auth/AuthContext';
 import { colors } from './src/theme';
 
@@ -49,7 +51,6 @@ function AuthScreens() {
 }
 
 function MainApp() {
-  const { signOut } = useAuth();
   // La Home es la primera pantalla que se ve al entrar.
   const [tab, setTab] = useState('inicio');
   // Canción abierta en el detalle (se muestra encima de la pestaña actual,
@@ -72,9 +73,9 @@ function MainApp() {
       case 'biblioteca':
         return <PlaceholderScreen title="Biblioteca" />;
       case 'stats':
-        return <PlaceholderScreen title="Stats" />;
+        return <StatsScreen />;
       case 'perfil':
-        return <PlaceholderScreen title="Perfil" onLogout={signOut} />;
+        return <ProfileScreen />;
       default:
         return null;
     }
