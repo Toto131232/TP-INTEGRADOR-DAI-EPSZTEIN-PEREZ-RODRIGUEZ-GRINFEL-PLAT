@@ -32,7 +32,7 @@ const iniciales = (usuario) => {
 const primerNombre = (usuario) =>
   (usuario?.nombre || usuario?.username || '').trim().split(/\s+/)[0];
 
-export default function HomeScreen({ onNavigate }) {
+export default function HomeScreen({ onNavigate, onOpenSong }) {
   const insets = useSafeAreaInsets();
   const [resumen, setResumen] = useState(null);
   const [destacados, setDestacados] = useState([]);
@@ -120,7 +120,7 @@ export default function HomeScreen({ onNavigate }) {
       ) : (
         <>
           <ResumenCard stats={stats} onVerStats={() => onNavigate?.('stats')} />
-          <Favoritos canciones={resumen?.favoritos ?? []} />
+          <Favoritos canciones={resumen?.favoritos ?? []} onOpenSong={onOpenSong} />
         </>
       )}
 
@@ -136,11 +136,11 @@ export default function HomeScreen({ onNavigate }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.destacadosList}
           renderItem={({ item }) => (
-            <View style={styles.destacado}>
+            <Pressable style={styles.destacado} onPress={() => onOpenSong?.(item)}>
               <Cover uri={item.album.portadaUrl} size={150} radius={radius.md} />
               <Text style={styles.destacadoTitulo} numberOfLines={1}>{item.titulo}</Text>
               <Text style={styles.destacadoArtista} numberOfLines={1}>{item.artista.nombre}</Text>
-            </View>
+            </Pressable>
           )}
         />
       )}
@@ -188,7 +188,7 @@ function Stat({ valor, label }) {
   );
 }
 
-function Favoritos({ canciones }) {
+function Favoritos({ canciones, onOpenSong }) {
   return (
     <>
       <Text style={styles.sectionTitle}>Tus favoritos</Text>
@@ -199,10 +199,10 @@ function Favoritos({ canciones }) {
       ) : (
         <View style={styles.grid}>
           {canciones.map((c) => (
-            <View key={c.deezerId} style={styles.favorito}>
+            <Pressable key={c.deezerId} style={styles.favorito} onPress={() => onOpenSong?.(c)}>
               <Cover uri={c.album.portadaUrl} size={60} />
               <Text style={styles.favoritoTitulo} numberOfLines={2}>{c.titulo}</Text>
-            </View>
+            </Pressable>
           ))}
         </View>
       )}

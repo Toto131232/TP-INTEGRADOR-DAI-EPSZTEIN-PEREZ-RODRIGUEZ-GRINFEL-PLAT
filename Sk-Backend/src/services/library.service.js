@@ -68,6 +68,30 @@ export const changeStatus = async (idUsuario, deezerId, estado) => {
   return libraryRepository.findOne(idUsuario, deezerId);
 };
 
+// Me gusta / ya no me gusta. Si la canción no estaba en la biblioteca y se le da
+// "me gusta", se agrega como 'escuchado' (si te gusta, la escuchaste).
+export const setLike = async (idUsuario, deezerId, meGusta) => {
+  if (!(await libraryRepository.findOne(idUsuario, deezerId))) {
+    if (!meGusta) throw new HttpError(404, NOT_IN_LIBRARY);
+    try {
+      await addSong(idUsuario, deezerId, 'escuchado');
+    } catch (err) {
+      // Otro pedido la agregó justo antes: seguimos igual
+      if (err.status !== 409) throw err;
+    }
+  }
+
+  await withTransaction(async (db) => {
+    const current = await libraryRepository.findForUpdate(db, idUsuario, deezerId);
+    if (!current) throw new HttpError(404, NOT_IN_LIBRARY);
+    if (current.me_gusta !== meGusta) {
+      await libraryRepository.updateLike(db, idUsuario, deezerId, meGusta);
+    }
+  });
+
+  return libraryRepository.findOne(idUsuario, deezerId);
+};
+
 // Crea la puntuación si no tenía, o la reemplaza si ya tenía una
 export const rate = async (idUsuario, deezerId, puntuacion) => {
   await withTransaction(async (db) => {
