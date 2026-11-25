@@ -61,3 +61,6 @@ export const apiGet = (path, params = {}, { signal } = {}) =>
 
 export const apiPost = (path, body, { signal } = {}) =>
   request('POST', path, { body, signal });
+
+export const apiPatch = (path, body, { signal } = {}) =>
+  request('PATCH', path, { body, signal });
