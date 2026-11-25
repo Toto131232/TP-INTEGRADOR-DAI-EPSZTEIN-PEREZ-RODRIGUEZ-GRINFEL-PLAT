@@ -31,6 +31,7 @@ router.get('/library/:deezerId', requireAuth, libraryController.getOne);
 router.delete('/library/:deezerId', requireAuth, libraryController.remove);
 router.patch('/library/:deezerId/status', requireAuth, libraryController.changeStatus);
 router.put('/library/:deezerId/rating', requireAuth, libraryController.rate);
+router.put('/library/:deezerId/like', requireAuth, libraryController.like);
 
 // Reseñas: listar las de una canción es público; crear, editar y borrar piden token
 router.get('/songs/:deezerId/reviews', reviewController.listBySong);

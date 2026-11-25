@@ -20,6 +20,42 @@ export const searchSongs = async ({ q, limit, index }) => {
   };
 };
 
+// Detalle de una canción para la pantalla de detalle (datos frescos de Deezer).
+// Además del track pide el álbum, que es donde Deezer guarda los géneros.
+export const getSongDetail = async (deezerId) => {
+  let track;
+  try {
+    ({ data: track } = await deezerApi.get(`/track/${deezerId}`));
+  } catch (err) {
+    if (err.status === 404) throw new HttpError(404, `No existe una canción con id ${deezerId} en Deezer`);
+    throw err;
+  }
+
+  let generos = [];
+  if (track.album?.id) {
+    try {
+      const { data: album } = await deezerApi.get(`/album/${track.album.id}`);
+      generos = (album.genres?.data ?? []).map((g) => g.name).filter(Boolean);
+    } catch {
+      // Sin géneros: la pantalla se muestra igual
+    }
+  }
+
+  const fecha = track.release_date && !track.release_date.startsWith('0000') ? track.release_date : null;
+  const base = toSong(track);
+  return {
+    ...base,
+    album: {
+      ...base.album,
+      // Portada grande para la cabecera del detalle
+      portadaGrandeUrl: track.album?.cover_xl ?? track.album?.cover_big ?? base.album.portadaUrl,
+    },
+    fechaLanzamiento: fecha,
+    generos,
+    link: track.link ?? null,
+  };
+};
+
 // Recorta textos largos para que entren en las columnas VARCHAR de la tabla cancion
 const cut = (text, max) => (text ? String(text).slice(0, max) : null);
 
