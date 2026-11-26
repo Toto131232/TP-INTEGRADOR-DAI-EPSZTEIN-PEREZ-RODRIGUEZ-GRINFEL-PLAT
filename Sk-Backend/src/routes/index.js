@@ -8,6 +8,7 @@ import { requireAuth } from '../middlewares/auth.middleware.js';
 import * as libraryController from '../controllers/library.controller.js';
 import * as reviewController from '../controllers/review.controller.js';
 import * as activityController from '../controllers/activity.controller.js';
+import * as playlistController from '../controllers/playlist.controller.js';
 import * as profileController from '../controllers/profile.controller.js';
 import { query } from '../config/db.js';
 
@@ -125,6 +126,62 @@ router.put('/reviews/:idResena', requireAuth, reviewController.update);
 //   403 -> la reseña es de otro usuario
 //   404 -> la reseña no existe
 router.delete('/reviews/:idResena', requireAuth, reviewController.remove);
+
+// ---------- Playlists del usuario logueado (todas piden token) ----------
+// Son privadas: si la playlist no existe o es de otro usuario se responde 404 igual,
+// así no se revela que existe.
+
+// GET /api/playlists
+// Lista las playlists del usuario.
+//   200 -> { total, playlists }
+router.get('/playlists', requireAuth, playlistController.list);
+
+// POST /api/playlists   body: { nombre, descripcion?, portada_url? }
+// Crea una playlist nueva y registra la actividad.
+//   201 -> se creó: { playlist }
+//   400 -> nombre vacío o de más de 100 caracteres, descripcion de más de 300,
+//          o portada_url no es una URL http/https de hasta 500 caracteres
+//   409 -> ya tenés una playlist con ese nombre
+router.post('/playlists', requireAuth, playlistController.create);
+
+// GET /api/playlists/:idPlaylist
+// Detalle de una playlist con sus canciones en orden.
+//   200 -> { playlist }   (incluye cantidad_canciones y canciones)
+//   400 -> idPlaylist inválido
+//   404 -> la playlist no existe o no es tuya
+router.get('/playlists/:idPlaylist', requireAuth, playlistController.getOne);
+
+// PATCH /api/playlists/:idPlaylist   body: { nombre?, descripcion?, portada_url? }   (al menos uno)
+// Edita solo los campos que se mandan. descripcion o portada_url en null las borran.
+//   200 -> { playlist }   (ya editada)
+//   400 -> idPlaylist inválido, no se mandó ningún campo, o algún campo es inválido
+//   404 -> la playlist no existe o no es tuya
+//   409 -> ya tenés otra playlist con ese nombre
+router.patch('/playlists/:idPlaylist', requireAuth, playlistController.update);
+
+// DELETE /api/playlists/:idPlaylist
+// Borra una playlist (las canciones no se borran de la biblioteca).
+//   204 -> se borró (la respuesta no tiene cuerpo)
+//   400 -> idPlaylist inválido
+//   404 -> la playlist no existe o no es tuya
+router.delete('/playlists/:idPlaylist', requireAuth, playlistController.remove);
+
+// POST /api/playlists/:idPlaylist/songs   body: { deezer_id }
+// Agrega una canción al final de la playlist. No hace falta que esté en la biblioteca,
+// solo que exista en Deezer.
+//   201 -> se agregó: { cancion }
+//   400 -> idPlaylist o deezer_id inválidos
+//   404 -> la playlist no existe o no es tuya, o la canción no existe en Deezer
+//   409 -> la canción ya está en esta playlist
+//   502 -> Deezer no respondió o devolvió un error
+router.post('/playlists/:idPlaylist/songs', requireAuth, playlistController.addSong);
+
+// DELETE /api/playlists/:idPlaylist/songs/:deezerId
+// Saca una canción de la playlist (las que estaban después suben un lugar).
+//   204 -> se quitó (la respuesta no tiene cuerpo)
+//   400 -> idPlaylist o deezerId inválidos
+//   404 -> la playlist no existe o no es tuya, o la canción no está en la playlist
+router.delete('/playlists/:idPlaylist/songs/:deezerId', requireAuth, playlistController.removeSong);
 
 // ---------- Actividad ----------
 

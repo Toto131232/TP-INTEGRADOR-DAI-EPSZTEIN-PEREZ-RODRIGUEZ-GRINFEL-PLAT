@@ -1,7 +1,12 @@
 import { apiDelete, apiGet, apiPatch, apiPost, apiPut } from './client';
 
-// Biblioteca del usuario logueado. Todas devuelven la fila de la biblioteca:
-// { deezer_id, estado, puntuacion, me_gusta, ... }
+// Biblioteca del usuario logueado (todas van con token).
+// Cada canción viene así: { deezer_id, estado, puntuacion, me_gusta, titulo, artista_nombre, portada_url, ... }
+
+// GET /api/library?estado=&puntuacion_min=&orden=&direccion= -> { total, canciones }
+// Los filtros en null no se mandan (apiGet los saltea).
+export const getLibrary = ({ estado, puntuacionMin, orden, direccion } = {}, { signal } = {}) =>
+  apiGet('/library', { estado, puntuacion_min: puntuacionMin, orden, direccion }, { signal });
 
 // GET /api/library/:deezerId -> la canción en mi biblioteca, o null si no está
 export const getLibraryItem = async (deezerId, { signal } = {}) => {
