@@ -18,7 +18,7 @@ export const duracionTotal = (segundos) => {
 // 1 -> "1 canción",  3 -> "3 canciones"
 export const cantidadCanciones = (n) => `${n} ${n === 1 ? 'canción' : 'canciones'}`;
 
-// "Rick Astley" -> "RA",  "a-ha" -> "AH",  "Queen" -> "QU"
+// "Soda Stereo" -> "SS",  "a-ha" -> "AH",  "Queen" -> "QU"
 export const iniciales = (texto) => {
   const palabras = (texto || '?').split(/[\s\-_.]+/).filter(Boolean);
   const letras =
