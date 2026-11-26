@@ -7,8 +7,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed:demo": "node scripts/seed-demo.js",
-    "test:biblioteca": "node scripts/probar-biblioteca.js",
-    "test:playlists": "node scripts/probar-playlists.js"
+    "test:biblioteca": "node scripts/probar-biblioteca.js"
   },
   "author": "",
   "license": "ISC",

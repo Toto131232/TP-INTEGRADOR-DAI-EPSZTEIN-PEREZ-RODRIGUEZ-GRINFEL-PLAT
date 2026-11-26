@@ -15,7 +15,7 @@ BEGIN;
 --  Canciones (caché de Deezer, datos reales)
 -- -----------------------------------------------------
 INSERT INTO cancion (deezer_id, titulo, artista_deezer_id, artista_nombre, album_titulo, portada_url, duracion_seg) VALUES
-  (1173622,    'Tainted Love',            1668,    'Soft Cell',           'The Very Best Of Soft Cell',    'https://cdn-images.dzcdn.net/images/cover/a809e8767a0cc557be1c894c5ed1c71e/250x250-000000-80-0-0.jpg', 160),
+  (14408104,   'Never Gonna Give You Up', 6160,    'Rick Astley',         'Reeling In The Decades',        'https://cdn-images.dzcdn.net/images/cover/a37761cd98b72998ff1d8cbfedbf0863/250x250-000000-80-0-0.jpg', 211),
   (13247459,   'De Música Ligera',        4345,    'Soda Stereo',         'Me Verás Volver (Hits & Más)',  'https://cdn-images.dzcdn.net/images/cover/c8740ff412c45180d98441c84159f232/250x250-000000-80-0-0.jpg', 213),
   (537033822,  'Demoliendo Hoteles',      4300,    'Charly García',       'Piano Bar',                     'https://cdn-images.dzcdn.net/images/cover/6932458c3c7c49e91d2673d38685671e/250x250-000000-80-0-0.jpg', 134),
   (13255149,   'Crimen',                  1374,    'Gustavo Cerati',      'Ahí Vamos',                     'https://cdn-images.dzcdn.net/images/cover/994b58426935136ff774ff4ee880931b/250x250-000000-80-0-0.jpg', 232),
@@ -55,7 +55,7 @@ INSERT INTO biblioteca (id_usuario, deezer_id, estado, puntuacion, agregada_en)
 SELECT u.id_usuario, b.deezer_id, b.estado, b.puntuacion, NOW() - b.hace
 FROM usuario u
 CROSS JOIN (VALUES
-  (1173622::BIGINT,    'escuchado',       5::SMALLINT, INTERVAL '6 days'),
+  (14408104::BIGINT,   'escuchado',       5::SMALLINT, INTERVAL '6 days'),
   (13247459::BIGINT,   'escuchado',       5::SMALLINT, INTERVAL '5 days'),
   (537033822::BIGINT,  'escuchado',       5::SMALLINT, INTERVAL '5 days'),
   (13255149::BIGINT,   'escuchado',       4::SMALLINT, INTERVAL '4 days'),
