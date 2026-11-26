@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -7,9 +7,11 @@ import HomeScreen from './src/screens/HomeScreen';
 import SearchScreen from './src/screens/SearchScreen';
 import LibraryScreen from './src/screens/LibraryScreen';
 import PlaylistDetailScreen from './src/screens/PlaylistDetailScreen';
-import PlaceholderScreen from './src/screens/PlaceholderScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
+import SongDetailScreen from './src/screens/SongDetailScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+import StatsScreen from './src/screens/StatsScreen';
 import { AuthProvider, useAuth } from './src/auth/AuthContext';
 import { colors } from './src/theme';
 
@@ -50,7 +52,6 @@ function AuthScreens() {
 }
 
 function MainApp() {
-  const { signOut } = useAuth();
   // La Home es la primera pantalla que se ve al entrar.
   const [tab, setTab] = useState('inicio');
   // Biblioteca: sección elegida y playlist abierta (null = se ve la lista). Viven acá porque
@@ -58,33 +59,45 @@ function MainApp() {
   // vas a Buscar y volvés a Biblioteca, seguís viendo esa playlist.
   const [seccionBiblioteca, setSeccionBiblioteca] = useState('canciones');
   const [playlistAbierta, setPlaylistAbierta] = useState(null);
+  // Canción abierta en el detalle (se muestra encima de la pestaña actual,
+  // así al volver la búsqueda sigue como estaba)
+  const [detalle, setDetalle] = useState(null);
+
+  const abrirCancion = useCallback((song) => setDetalle(song), []);
+  const cerrarDetalle = useCallback(() => setDetalle(null), []);
+  const cambiarTab = useCallback((t) => {
+    setDetalle(null);
+    setTab(t);
+  }, []);
 
   const renderScreen = () => {
     switch (tab) {
       case 'inicio':
-        return <HomeScreen onNavigate={setTab} />;
+        return <HomeScreen onNavigate={cambiarTab} onOpenSong={abrirCancion} />;
       case 'buscar':
-        return <SearchScreen />;
+        return <SearchScreen onOpenSong={abrirCancion} />;
       case 'biblioteca':
         return playlistAbierta ? (
           <PlaylistDetailScreen
             key={playlistAbierta}
             idPlaylist={playlistAbierta}
             onBack={() => setPlaylistAbierta(null)}
-            onNavigate={setTab}
+            onNavigate={cambiarTab}
+            onOpenSong={abrirCancion}
           />
         ) : (
           <LibraryScreen
-            onNavigate={setTab}
+            onNavigate={cambiarTab}
+            onOpenSong={abrirCancion}
             seccion={seccionBiblioteca}
             onChangeSeccion={setSeccionBiblioteca}
             onOpenPlaylist={setPlaylistAbierta}
           />
         );
       case 'stats':
-        return <PlaceholderScreen title="Stats" />;
+        return <StatsScreen />;
       case 'perfil':
-        return <PlaceholderScreen title="Perfil" onLogout={signOut} />;
+        return <ProfileScreen />;
       default:
         return null;
     }
@@ -92,8 +105,15 @@ function MainApp() {
 
   return (
     <>
-      <View style={styles.screen}>{renderScreen()}</View>
-      <TabBar active={tab} onChange={setTab} />
+      <View style={styles.screen}>
+        {renderScreen()}
+        {detalle && (
+          <View style={StyleSheet.absoluteFill}>
+            <SongDetailScreen key={detalle.deezerId} song={detalle} onBack={cerrarDetalle} />
+          </View>
+        )}
+      </View>
+      <TabBar active={tab} onChange={cambiarTab} />
     </>
   );
 }

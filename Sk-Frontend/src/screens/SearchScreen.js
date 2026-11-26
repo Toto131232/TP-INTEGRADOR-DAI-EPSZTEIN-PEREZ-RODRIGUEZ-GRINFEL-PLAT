@@ -19,7 +19,7 @@ import { colors } from '../theme';
 const DEBOUNCE_MS = 400;
 const PAGE_SIZE = 20;
 
-export default function SearchScreen() {
+export default function SearchScreen({ onOpenSong }) {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [songs, setSongs] = useState([]);
@@ -145,7 +145,7 @@ export default function SearchScreen() {
         renderItem={({ item }) => (
           <View style={styles.resultado}>
             <View style={styles.resultadoInfo}>
-              <SongItem song={item} />
+              <SongItem song={item} onPress={onOpenSong} />
             </View>
             <Pressable
               onPress={() => setParaAgregar(item)}
