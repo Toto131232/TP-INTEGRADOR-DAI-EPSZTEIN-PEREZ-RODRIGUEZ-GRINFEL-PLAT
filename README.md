@@ -1,3 +1,5 @@
+Link publico: https://tp-integrador-henna.vercel.app/
+
 "# TP-INTEGRADOR-DAI-EPSZTEIN-PEREZ-RODRIGUEZ-GRINFEL-PLAT" 
 SKMusic es una app para escuchar música, puntuarla con estrellas y dejar reseñas. Con lo que cada usuario escucha y guarda, la app arma un resumen tipo Spotify Wrapped: sus artistas y canciones más escuchados, sus géneros favoritos y a qué hora escucha más.
 
